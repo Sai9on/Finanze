@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -79,6 +80,17 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
 .checkOption input{width:18px;height:18px;padding:0;margin:1px 0 0;flex-shrink:0}
 .profitPositive{color:#16845f}
 .profitNegative{color:#c03945}
+
+/* Salvadanaio */
+.piggyTotal{font-size:27px;font-weight:750;margin:8px 0 17px}
+.piggyRow{display:flex;align-items:center;gap:7px;padding:10px 0;border-bottom:1px solid #e3e5e9}
+.piggyImage{width:58px;height:42px;object-fit:contain;flex-shrink:0}
+.piggyImageBox{width:58px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.piggyImageBox img{max-width:100%;max-height:100%;object-fit:contain}
+.piggyButton{width:32px;height:34px;border:0;border-radius:9px;background:#e9edf3;font-size:20px;font-weight:700;flex-shrink:0}
+.piggyQuantity{width:52px;padding:7px 3px;text-align:center;border:1px solid #dddfe4;border-radius:8px;font-size:15px;font-weight:650}
+.piggyValue{flex:1;text-align:right;font-size:14px;font-weight:700;min-width:65px}
+.piggyReset{border:0;background:#FCE8E8;color:#B42318;border-radius:9px;padding:9px 12px;font-size:12px;font-weight:650;margin-top:14px}
 </style>
 </head>
 <body>
@@ -104,6 +116,14 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
         <span>Disponibilità</span>
         <strong id="detailLiquidity">€ 0,00</strong>
       </div>
+    </div>
+
+    <div class="composition" id="piggybankSection" style="display:none">
+      <div class="compositionTitle"><span class="sectionMarker"></span>SALVADANAIO</div>
+      <div class="label">TOTALE CONTANTI</div>
+      <div class="piggyTotal" id="piggyTotal">€ 0,00</div>
+      <div id="piggyRows"></div>
+      <button class="piggyReset" type="button" onclick="resetPiggybank()">Svuota salvadanaio</button>
     </div>
 
     <div class="composition">
@@ -166,23 +186,17 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
     <input id="investmentName" maxlength="50" placeholder="Es. BTC, Apple">
     <label for="internalTransferAmount">Importo totale speso (€)</label>
     <input id="internalTransferAmount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0,00">
-
     <label for="investmentUnitPrice">Prezzo unitario (€), facoltativo</label>
     <input id="investmentUnitPrice" type="number" inputmode="decimal" min="0.00000001" step="any" placeholder="Es. 150,00">
-
     <label for="investmentQuantity">Quantità effettivamente ricevuta, facoltativa</label>
     <input id="investmentQuantity" type="number" inputmode="decimal" min="0.00000001" step="any" placeholder="Es. 0,01">
-
     <label for="investmentReceivedValue">Valore effettivamente ricevuto in euro (€), facoltativo</label>
     <input id="investmentReceivedValue" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Se vuoto, usa l'importo speso">
-
     <label class="checkOption" for="preexistingInvestment">
       <input id="preexistingInvestment" type="checkbox">
       <span>Investimento già posseduto: registra la posizione senza sottrarre nuovamente denaro dalla liquidità.</span>
     </label>
-
     <div class="movementHint">L'importo speso determina il costo storico. Il valore ricevuto determina il valore iniziale mostrato nel patrimonio. Prezzo unitario e quantità sono informazioni aggiuntive e possono essere lasciati vuoti.</div>
-
     <div class="formbuttons">
       <button class="cancel" onclick="closeInternalTransfer()">Annulla</button>
       <button class="save" onclick="saveInternalTransfer()">Registra acquisto</button>
@@ -226,35 +240,27 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
       <option value="purchase">Acquisto investimento</option>
       <option value="sale">Vendita investimento</option>
     </select>
-
     <label for="editMovementAccount">Conto</label>
     <select id="editMovementAccount"></select>
-
     <div id="editTransferFields" style="display:none">
       <label for="editFromAccount">Conto di partenza</label>
       <select id="editFromAccount"></select>
       <label for="editToAccount">Conto di destinazione</label>
       <select id="editToAccount"></select>
     </div>
-
     <label for="editMovementAmount">Importo (€)</label>
     <input id="editMovementAmount" type="number" inputmode="decimal" step="0.01" placeholder="Lascia vuoto se non noto">
-
     <label for="editMovementDescription">Descrizione / investimento</label>
     <input id="editMovementDescription" maxlength="100" placeholder="Facoltativo">
-
     <div id="editInvestmentFields" style="display:none">
       <label for="editMovementQuantity">Quantità</label>
       <input id="editMovementQuantity" type="number" inputmode="decimal" step="any" placeholder="Lascia vuoto se non nota">
       <label for="editMovementCommission">Commissione (€)</label>
       <input id="editMovementCommission" type="number" inputmode="decimal" step="0.01" placeholder="0,00">
     </div>
-
     <label for="editMovementDate">Data del movimento</label>
     <input id="editMovementDate" type="date">
-
     <div class="movementHint">Puoi correggere un movimento anche se alcuni dati sono mancanti. Se il conto o l'importo non sono disponibili, il movimento viene comunque salvato con i dati inseriti.</div>
-
     <div class="formbuttons">
       <button class="cancel" onclick="closeMovementEditor()">Annulla</button>
       <button class="save" onclick="saveMovementEdit()">Salva modifiche</button>
@@ -266,24 +272,17 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
 
   <div class="form" id="investmentEditForm">
     <h2>Modifica investimento</h2>
-
     <label for="editInvestmentName">Nome dell'investimento</label>
     <input id="editInvestmentName" maxlength="50">
-
     <label for="editInvestmentCategory">Categoria</label>
     <input id="editInvestmentCategory" maxlength="50" placeholder="Es. Azioni, ETF, Criptovalute">
-
     <label for="editInvestmentQuantity">Quantità posseduta</label>
     <input id="editInvestmentQuantity" type="number" inputmode="decimal" min="0.00000001" step="any" placeholder="Lascia vuoto se non disponibile">
-
     <label for="editInvestmentCost">Capitale effettivamente investito (€)</label>
     <input id="editInvestmentCost" type="number" inputmode="decimal" min="0" step="0.01">
-
     <label for="editInvestmentValue">Valore attuale totale (€)</label>
     <input id="editInvestmentValue" type="number" inputmode="decimal" min="0" step="0.01">
-
     <div class="movementHint">Il capitale investito indica quanto hai speso per la posizione ancora posseduta. Il valore attuale è quanto vale oggi l'investimento.</div>
-
     <div class="formbuttons">
       <button class="cancel" onclick="closeInvestmentEditor()">Annulla</button>
       <button class="save" onclick="saveInvestmentEdit()">Salva modifiche</button>
@@ -308,6 +307,9 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
 <script>
 const palette = ["#3978E8","#18A779","#9659D8","#F19A38","#E05260","#16A6B6","#6B7280","#D3A72F"];
 const defaultInvestmentCategories = ["Azioni","Criptovalute","ETF","Obbligazioni","Altro"];
+const SERVER_URL = "https://server-app.sai9on.workers.dev/api/data";
+const APP_ID = "myfinance";
+const piggyDenominations = [2,10,20,50,100];
 
 let investmentCategories = [...defaultInvestmentCategories];
 let accounts = [];
@@ -320,20 +322,154 @@ let selectedColor = palette[0];
 let showAllTransfers = false;
 let editingMovement = null;
 let editingInvestment = null;
+let serverReady = false;
+let serverBusy = false;
+let localRevision = 0;
+let lastServerUpdate = 0;
 
 function makeId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
+function piggyTotal(account) {
+  const box = account && account.salvadanaio ? account.salvadanaio : {};
+  return piggyDenominations.reduce((sum, value) => sum + (Math.max(0, parseInt(box[String(value)],10) || 0) * value), 0);
+}
+
+function ensurePiggybank(account) {
+  if (!account.salvadanaio || typeof account.salvadanaio !== "object") account.salvadanaio = {};
+  piggyDenominations.forEach(value => {
+    const key = String(value);
+    const quantity = parseInt(account.salvadanaio[key],10);
+    account.salvadanaio[key] = Number.isFinite(quantity) && quantity > 0 ? quantity : 0;
+  });
+}
+
 function resetApp() {
   if (!confirm("Vuoi davvero resettare MyFinance? Verranno eliminati tutti i conti, i saldi, gli investimenti, i movimenti e le categorie personalizzate. Questa operazione non può essere annullata.")) return;
 
+  accounts = [];
+  transfers = [];
+  incomes = [];
+  investmentCategories = [...defaultInvestmentCategories];
   localStorage.removeItem("rendiconto_conti");
   localStorage.removeItem("rendiconto_trasferimenti");
   localStorage.removeItem("rendiconto_entrate");
   localStorage.removeItem("rendiconto_categorie_investimenti");
+  persist();
+}
 
-  location.reload();
+function resetPiggybank() {
+  const account = accounts.find(a => String(a.id) === String(selectedAccountId));
+  if (!account || account.name !== "Contanti") return;
+
+  const oldTotal = piggyTotal(account);
+  if (!oldTotal) return alert("Il salvadanaio è già vuoto.");
+  if (!confirm("Vuoi svuotare il salvadanaio? Il totale verrà sottratto dalla liquidità del conto Contanti.")) return;
+
+  ensurePiggybank(account);
+  piggyDenominations.forEach(value => account.salvadanaio[String(value)] = 0);
+  account.liquidity = roundMoney(Number(account.liquidity) - oldTotal);
+  updateAccountBalance(account);
+  persist();
+  openAccountDetail(account.id);
+}
+
+function changePiggyQuantity(denomination, change) {
+  const account = accounts.find(a => String(a.id) === String(selectedAccountId));
+  if (!account || account.name !== "Contanti") return;
+
+  ensurePiggybank(account);
+  const oldTotal = piggyTotal(account);
+  const key = String(denomination);
+  const current = account.salvadanaio[key] || 0;
+  account.salvadanaio[key] = Math.max(0, current + change);
+  const difference = piggyTotal(account) - oldTotal;
+
+  account.liquidity = roundMoney(Number(account.liquidity) + difference);
+  updateAccountBalance(account);
+  persist();
+  openAccountDetail(account.id);
+}
+
+function setPiggyQuantity(denomination, rawValue) {
+  const account = accounts.find(a => String(a.id) === String(selectedAccountId));
+  if (!account || account.name !== "Contanti") return;
+
+  const quantity = rawValue.trim() === "" ? 0 : Number(rawValue);
+  if (!Number.isInteger(quantity) || quantity < 0) {
+    alert("Inserisci una quantità intera pari o superiore a zero.");
+    renderPiggybank(account);
+    return;
+  }
+
+  ensurePiggybank(account);
+  const oldTotal = piggyTotal(account);
+  account.salvadanaio[String(denomination)] = quantity;
+  const difference = piggyTotal(account) - oldTotal;
+
+  account.liquidity = roundMoney(Number(account.liquidity) + difference);
+  updateAccountBalance(account);
+  persist();
+  openAccountDetail(account.id);
+}
+
+function renderPiggybank(account) {
+  const section = document.getElementById("piggybankSection");
+  if (!account || account.name !== "Contanti") {
+    section.style.display = "none";
+    return;
+  }
+
+  ensurePiggybank(account);
+  section.style.display = "block";
+  document.getElementById("piggyTotal").textContent = euro(piggyTotal(account));
+
+  const container = document.getElementById("piggyRows");
+  container.innerHTML = "";
+
+  piggyDenominations.forEach(value => {
+    const quantity = account.salvadanaio[String(value)] || 0;
+    const row = document.createElement("div");
+    row.className = "piggyRow";
+
+    const imageBox = document.createElement("div");
+    imageBox.className = "piggyImageBox";
+    const img = document.createElement("img");
+    img.src = value + "-euro.jpg";
+    img.alt = value + " euro";
+    img.onerror = () => { img.style.display = "none"; };
+    imageBox.append(img);
+
+    const minus = document.createElement("button");
+    minus.type = "button";
+    minus.className = "piggyButton";
+    minus.textContent = "−";
+    minus.onclick = () => changePiggyQuantity(value,-1);
+
+    const input = document.createElement("input");
+    input.className = "piggyQuantity";
+    input.type = "number";
+    input.inputMode = "numeric";
+    input.min = "0";
+    input.step = "1";
+    input.value = quantity;
+    input.setAttribute("aria-label","Quantità banconote da " + value + " euro");
+    input.onchange = () => setPiggyQuantity(value,input.value);
+
+    const plus = document.createElement("button");
+    plus.type = "button";
+    plus.className = "piggyButton";
+    plus.textContent = "+";
+    plus.onclick = () => changePiggyQuantity(value,1);
+
+    const total = document.createElement("div");
+    total.className = "piggyValue";
+    total.textContent = euro(quantity * value);
+
+    row.append(imageBox,minus,input,plus,total);
+    container.append(row);
+  });
 }
 
 function deleteEditedMovement() {
@@ -341,68 +477,171 @@ function deleteEditedMovement() {
     alert("Nessun movimento selezionato per l'eliminazione.");
     return;
   }
-
-  const {collection, id} = editingMovement;
-  const item = getMovement(collection, id);
-
+  const {collection,id} = editingMovement;
+  const item = getMovement(collection,id);
   if (!item) {
     alert("Il movimento non è più disponibile. Riapri la cronologia e riprova.");
     return;
   }
-
   const description = item.description || item.assetName || (item.internal ? "Acquisto investimento" : "Movimento selezionato");
-
   if (!confirm('Vuoi eliminare il movimento "' + description + '"? Il saldo del conto e gli investimenti verranno aggiornati.')) return;
-
-  reverseMovementEffect(collection, item);
-
-  if (collection === "transfers") {
-    transfers = transfers.filter(entry => String(entry.id) !== String(id));
-  } else {
-    incomes = incomes.filter(entry => String(entry.id) !== String(id));
-  }
-
+  reverseMovementEffect(collection,item);
+  if (collection === "transfers") transfers = transfers.filter(entry => String(entry.id) !== String(id));
+  else incomes = incomes.filter(entry => String(entry.id) !== String(id));
   persist();
   closeMovementEditor();
 }
 
 function normalizeMovementIds() {
-  transfers.forEach((item, index) => {
-    if (!item.id) item.id = "legacy-transfer-" + index + "-" + String(item.date || 0);
-  });
-  incomes.forEach((item, index) => {
-    if (!item.id) item.id = "legacy-income-" + index + "-" + String(item.date || 0);
-  });
+  transfers.forEach((item,index) => { if (!item.id) item.id = "legacy-transfer-" + index + "-" + String(item.date || 0); });
+  incomes.forEach((item,index) => { if (!item.id) item.id = "legacy-income-" + index + "-" + String(item.date || 0); });
 }
 
-try {
-  accounts = JSON.parse(localStorage.getItem("rendiconto_conti")) || [];
-  if (!Array.isArray(accounts)) accounts = [];
-} catch (e) { accounts = []; }
+function loadLocalData() {
+  try {
+    accounts = JSON.parse(localStorage.getItem("rendiconto_conti")) || [];
+    if (!Array.isArray(accounts)) accounts = [];
+  } catch(e) { accounts = []; }
 
-try {
-  transfers = JSON.parse(localStorage.getItem("rendiconto_trasferimenti")) || [];
-  if (!Array.isArray(transfers)) transfers = [];
-} catch (e) { transfers = []; }
+  try {
+    transfers = JSON.parse(localStorage.getItem("rendiconto_trasferimenti")) || [];
+    if (!Array.isArray(transfers)) transfers = [];
+  } catch(e) { transfers = []; }
 
-try {
-  incomes = JSON.parse(localStorage.getItem("rendiconto_entrate")) || [];
-  if (!Array.isArray(incomes)) incomes = [];
-} catch (e) { incomes = []; }
+  try {
+    incomes = JSON.parse(localStorage.getItem("rendiconto_entrate")) || [];
+    if (!Array.isArray(incomes)) incomes = [];
+  } catch(e) { incomes = []; }
 
-try {
-  const savedCategories = JSON.parse(localStorage.getItem("rendiconto_categorie_investimenti")) || [];
-  if (Array.isArray(savedCategories)) {
-    investmentCategories = [...new Set([...defaultInvestmentCategories, ...savedCategories])];
+  try {
+    const savedCategories = JSON.parse(localStorage.getItem("rendiconto_categorie_investimenti")) || [];
+    if (Array.isArray(savedCategories)) investmentCategories = [...new Set([...defaultInvestmentCategories,...savedCategories])];
+  } catch(e) {
+    investmentCategories = [...defaultInvestmentCategories];
   }
-} catch (e) {
-  investmentCategories = [...defaultInvestmentCategories];
 }
 
-normalizeMovementIds();
+function normalizeAccounts() {
+  accounts.forEach(account => {
+    if (!Array.isArray(account.investments)) account.investments = [];
+    if (account.liquidity === undefined || account.liquidity === null) {
+      account.liquidity = (Number(account.balance) || 0) - investmentTotal(account);
+    }
+
+    account.investments.forEach(investment => {
+      if (investment.costBasis === undefined || investment.costBasis === null) investment.costBasis = Number(investment.value) || 0;
+      if (investment.quantity === undefined || investment.quantity === null) investment.quantity = null;
+      if (!investment.category) investment.category = "Altro";
+
+      if (investment.averagePrice === undefined || investment.averagePrice === null) {
+        const quantity = Number(investment.quantity);
+        investment.averagePrice = quantity > 0 ? Number(investment.costBasis) / quantity : null;
+      }
+
+      if (investment.currentPrice === undefined || investment.currentPrice === null) {
+        const quantity = Number(investment.quantity);
+        const value = Number(investment.value);
+        investment.currentPrice = quantity > 0 && value >= 0 ? value / quantity : null;
+      }
+
+      if (Number(investment.quantity) > 0 && Number(investment.currentPrice) > 0) {
+        investment.value = Number(investment.quantity) * Number(investment.currentPrice);
+      }
+    });
+
+    if (account.name === "Contanti") ensurePiggybank(account);
+    updateAccountBalance(account);
+  });
+}
+
+function snapshotData() {
+  return {
+    accounts,
+    transfers,
+    incomes,
+    investmentCategories
+  };
+}
+
+function saveLocalData() {
+  localStorage.setItem("rendiconto_conti",JSON.stringify(accounts));
+  localStorage.setItem("rendiconto_trasferimenti",JSON.stringify(transfers));
+  localStorage.setItem("rendiconto_entrate",JSON.stringify(incomes));
+  localStorage.setItem("rendiconto_categorie_investimenti",JSON.stringify(investmentCategories));
+}
+
+async function pushServerData() {
+  if (!serverReady || serverBusy) return;
+  serverBusy = true;
+  const revision = localRevision;
+  try {
+    const response = await fetch(SERVER_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({app_id:APP_ID,data:snapshotData()})
+    });
+    if (!response.ok) throw new Error("Errore server " + response.status);
+    const result = await response.json();
+    if (revision === localRevision && result.updated_at) {
+      const timestamp = Date.parse(result.updated_at);
+      if (Number.isFinite(timestamp)) lastServerUpdate = Math.max(lastServerUpdate,timestamp);
+    }
+  } catch(error) {
+    console.warn("Sincronizzazione MyFinance non riuscita:",error);
+  } finally {
+    serverBusy = false;
+  }
+}
+
+function applyServerData(data) {
+  if (!data || typeof data !== "object") return false;
+  if (Array.isArray(data.accounts)) accounts = data.accounts;
+  if (Array.isArray(data.transfers)) transfers = data.transfers;
+  if (Array.isArray(data.incomes)) incomes = data.incomes;
+  if (Array.isArray(data.investmentCategories)) {
+    investmentCategories = [...new Set([...defaultInvestmentCategories,...data.investmentCategories])];
+  }
+  normalizeMovementIds();
+  normalizeAccounts();
+  saveLocalData();
+  render();
+  if (selectedAccountId !== null) openAccountDetail(selectedAccountId);
+  return true;
+}
+
+async function syncFromServer(initial = false) {
+  const revisionAtStart = localRevision;
+  try {
+    const response = await fetch(SERVER_URL + "?app=" + encodeURIComponent(APP_ID),{cache:"no-store"});
+    if (!response.ok) throw new Error("Errore server " + response.status);
+    const result = await response.json();
+    const remoteData = result && result.data;
+    const remoteTime = result && result.updated_at ? Date.parse(result.updated_at) : 0;
+
+    if (remoteData && typeof remoteData === "object" && Object.keys(remoteData).length) {
+      if (initial || (Number.isFinite(remoteTime) && remoteTime > lastServerUpdate && revisionAtStart === localRevision)) {
+        if (applyServerData(remoteData)) {
+          if (Number.isFinite(remoteTime)) lastServerUpdate = remoteTime;
+        }
+      }
+    } else if (initial) {
+      await pushServerData();
+    }
+    serverReady = true;
+  } catch(error) {
+    console.warn("Server MyFinance non raggiungibile:",error);
+    serverReady = true;
+  }
+}
+
+function startServerSync() {
+  syncFromServer(true).then(() => {
+    setInterval(() => syncFromServer(false),5000);
+  });
+}
 
 function investmentTotal(account) {
-  return (account.investments || []).reduce((sum, investment) => sum + (Number(investment.value) || 0), 0);
+  return (account.investments || []).reduce((sum,investment) => sum + (Number(investment.value) || 0),0);
 }
 
 function updateAccountBalance(account) {
@@ -410,81 +649,42 @@ function updateAccountBalance(account) {
   account.balance = Math.round((account.liquidity + investmentTotal(account)) * 100) / 100;
 }
 
-accounts.forEach(account => {
-  if (!Array.isArray(account.investments)) account.investments = [];
-  if (account.liquidity === undefined || account.liquidity === null) {
-    account.liquidity = (Number(account.balance) || 0) - investmentTotal(account);
-  }
-
-  account.investments.forEach(investment => {
-    if (investment.costBasis === undefined || investment.costBasis === null) investment.costBasis = Number(investment.value) || 0;
-    if (investment.quantity === undefined || investment.quantity === null) investment.quantity = null;
-    if (!investment.category) investment.category = "Altro";
-
-    if (investment.averagePrice === undefined || investment.averagePrice === null) {
-      const quantity = Number(investment.quantity);
-      investment.averagePrice = quantity > 0 ? Number(investment.costBasis) / quantity : null;
-    }
-
-    if (investment.currentPrice === undefined || investment.currentPrice === null) {
-      const quantity = Number(investment.quantity);
-      const value = Number(investment.value);
-      investment.currentPrice = quantity > 0 && value >= 0 ? value / quantity : null;
-    }
-
-    if (Number(investment.quantity) > 0 && Number(investment.currentPrice) > 0) {
-      investment.value = Number(investment.quantity) * Number(investment.currentPrice);
-    }
-  });
-
-  updateAccountBalance(account);
-});
-
-const euro = value => Number(value || 0).toLocaleString("it-IT", {style:"currency",currency:"EUR"});
+const euro = value => Number(value || 0).toLocaleString("it-IT",{style:"currency",currency:"EUR"});
 
 function persist() {
   normalizeMovementIds();
   accounts.forEach(updateAccountBalance);
-  localStorage.setItem("rendiconto_conti", JSON.stringify(accounts));
-  localStorage.setItem("rendiconto_trasferimenti", JSON.stringify(transfers));
-  localStorage.setItem("rendiconto_entrate", JSON.stringify(incomes));
-  localStorage.setItem("rendiconto_categorie_investimenti", JSON.stringify(investmentCategories));
+  saveLocalData();
+  localRevision++;
   render();
+  pushServerData();
 }
 
 function render() {
-  document.getElementById("total").textContent = euro(accounts.reduce((sum, a) => sum + (Number(a.balance) || 0), 0));
-
+  document.getElementById("total").textContent = euro(accounts.reduce((sum,a) => sum + (Number(a.balance) || 0),0));
   const container = document.getElementById("accounts");
   container.innerHTML = "";
-
   if (!accounts.length) container.innerHTML = '<div class="empty">Aggiungi il tuo primo conto per iniziare.</div>';
 
   accounts.forEach(a => {
     const card = document.createElement("div");
     card.className = "account";
     card.onclick = () => openAccountDetail(a.id);
-
     const dot = document.createElement("div");
     dot.className = "dot";
     dot.style.background = a.color;
-
     const details = document.createElement("div");
     details.className = "details";
-
     const name = document.createElement("div");
     name.className = "name";
     name.textContent = a.name || "Conto senza nome";
-
     const balance = document.createElement("div");
     balance.className = "balance";
     balance.textContent = euro(a.balance);
-
-    details.append(name, balance);
-    card.append(dot, details);
+    details.append(name,balance);
+    card.append(dot,details);
     container.append(card);
   });
-
   renderTransfers();
 }
 
@@ -499,12 +699,12 @@ function openAccountDetail(id) {
 
   const account = accounts.find(a => String(a.id) === String(id));
   if (!account) return;
-
   selectedAccountId = account.id;
 
   document.getElementById("detailName").textContent = account.name || "Dettagli conto";
   document.getElementById("detailBalance").textContent = euro(account.balance);
   document.getElementById("detailLiquidity").textContent = euro(account.liquidity);
+  renderPiggybank(account);
 
   const investmentContainer = document.getElementById("detailInvestments");
   investmentContainer.innerHTML = "";
@@ -518,18 +718,14 @@ function openAccountDetail(id) {
     account.investments.forEach(investment => {
       const row = document.createElement("div");
       row.className = "assetRow";
-
       const details = document.createElement("div");
       details.className = "assetDetails";
-
       const name = document.createElement("strong");
       name.textContent = investment.name || "Investimento senza nome";
-
       const category = document.createElement("div");
       category.className = "assetCategory";
       category.textContent = investment.category || "Altro";
-
-      details.append(name, category);
+      details.append(name,category);
 
       const quantity = Number(investment.quantity);
       const averagePrice = Number(investment.averagePrice);
@@ -541,32 +737,23 @@ function openAccountDetail(id) {
 
       const numbers = document.createElement("div");
       numbers.className = "assetNumbers";
-
       if (Number.isFinite(quantity) && quantity > 0) {
         numbers.textContent = "Quantità: " + quantity.toLocaleString("it-IT",{maximumFractionDigits:8});
         if (Number.isFinite(averagePrice) && averagePrice > 0) numbers.textContent += " · Costo medio: " + euro(averagePrice);
         if (Number.isFinite(currentPrice) && currentPrice > 0) numbers.textContent += " · Prezzo di riferimento: " + euro(currentPrice);
-      } else {
-        numbers.textContent = "Quantità non disponibile";
-      }
+      } else numbers.textContent = "Quantità non disponibile";
 
       const invested = document.createElement("div");
       invested.className = "assetNumbers";
       invested.textContent = "Capitale investito: " + euro(costBasis);
-
       const profit = document.createElement("div");
       profit.className = "assetNumbers " + (profitLoss > 0 ? "profitPositive" : profitLoss < 0 ? "profitNegative" : "");
       profit.textContent = (profitLoss > 0 ? "Plusvalenza: +" : profitLoss < 0 ? "Minusvalenza: " : "Risultato: ") + euro(profitLoss);
-
-      if (profitPercent !== null) {
-        profit.textContent += " (" + (profitPercent > 0 ? "+" : "") + profitPercent.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2}) + "%)";
-      }
-
-      details.append(numbers, invested, profit);
+      if (profitPercent !== null) profit.textContent += " (" + (profitPercent > 0 ? "+" : "") + profitPercent.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2}) + "%)";
+      details.append(numbers,invested,profit);
 
       const right = document.createElement("div");
       right.className = "assetRight";
-
       const value = document.createElement("div");
       value.className = "assetValue";
       value.textContent = euro(investment.value);
@@ -578,34 +765,31 @@ function openAccountDetail(id) {
       updateButton.textContent = "Aggiorna";
       updateButton.onclick = event => {
         event.stopPropagation();
-        updateInvestmentPrice(account.id, investment.name);
+        updateInvestmentPrice(account.id,investment.name);
       };
       right.append(updateButton);
 
       const actions = document.createElement("div");
       actions.className = "assetActions";
-
       const editButton = document.createElement("button");
       editButton.type = "button";
       editButton.className = "editInvestment";
       editButton.textContent = "Modifica";
       editButton.onclick = event => {
         event.stopPropagation();
-        editInvestment(account.id, investment.name);
+        editInvestment(account.id,investment.name);
       };
-
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
       deleteButton.className = "deleteInvestment";
       deleteButton.textContent = "Elimina";
       deleteButton.onclick = event => {
         event.stopPropagation();
-        deleteInvestment(account.id, investment.name);
+        deleteInvestment(account.id,investment.name);
       };
-
-      actions.append(editButton, deleteButton);
+      actions.append(editButton,deleteButton);
       right.append(actions);
-      row.append(details, right);
+      row.append(details,right);
       investmentContainer.append(row);
     });
   }
@@ -616,40 +800,24 @@ function openAccountDetail(id) {
 
 function openSale() {
   if (selectedAccountId === null) return;
-
   const account = accounts.find(a => String(a.id) === String(selectedAccountId));
   if (!account) return;
-
   const availableInvestments = (account.investments || []).filter(investment => Number(investment.quantity) > 0);
+  if (!availableInvestments.length) return alert("Non ci sono investimenti con una quantità disponibile da vendere.");
 
-  if (!availableInvestments.length) {
-    alert("Non ci sono investimenti con una quantità disponibile da vendere.");
-    return;
-  }
-
-  closeForm();
-  closeTransfer();
-  closeInternalTransfer();
-  closeIncome();
-  closeSale();
-  closeMovementEditor();
-  closeInvestmentEditor();
-
+  closeForm(); closeTransfer(); closeInternalTransfer(); closeIncome(); closeSale(); closeMovementEditor(); closeInvestmentEditor();
   const select = document.getElementById("saleInvestment");
   select.innerHTML = "";
-
   availableInvestments.forEach(investment => {
     const option = document.createElement("option");
     option.value = investment.name;
     option.textContent = investment.name + " — disponibili: " + Number(investment.quantity).toLocaleString("it-IT",{maximumFractionDigits:8});
     select.append(option);
   });
-
   document.getElementById("saleQuantity").value = "";
   document.getElementById("saleAmount").value = "";
   document.getElementById("saleCommission").value = "";
   document.getElementById("saleForm").style.display = "block";
-
   updateSaleQuantityLabel();
   document.getElementById("saleForm").scrollIntoView({behavior:"smooth"});
 }
@@ -658,9 +826,7 @@ function updateSaleQuantityLabel() {
   const account = accounts.find(a => String(a.id) === String(selectedAccountId));
   const assetName = document.getElementById("saleInvestment").value;
   const investment = account && account.investments.find(item => item.name === assetName);
-  const label = document.getElementById("saleQuantityLabel");
-
-  label.textContent = investment
+  document.getElementById("saleQuantityLabel").textContent = investment
     ? "Quantità da vendere (disponibili: " + Number(investment.quantity).toLocaleString("it-IT",{maximumFractionDigits:8}) + ")"
     : "Quantità da vendere";
 }
@@ -668,7 +834,6 @@ function updateSaleQuantityLabel() {
 function saveSale() {
   const account = accounts.find(a => String(a.id) === String(selectedAccountId));
   if (!account) return alert("Seleziona un conto valido.");
-
   const assetName = document.getElementById("saleInvestment").value;
   const investment = account.investments.find(item => item.name === assetName);
   if (!investment) return alert("Seleziona un investimento valido.");
@@ -676,7 +841,6 @@ function saveSale() {
   const rawQuantity = document.getElementById("saleQuantity").value.trim();
   const rawAmount = document.getElementById("saleAmount").value.trim();
   const rawCommission = document.getElementById("saleCommission").value.trim();
-
   const quantitySold = Number(rawQuantity);
   const grossAmount = Math.round(Number(rawAmount) * 100) / 100;
   const commission = rawCommission === "" ? 0 : Math.round(Number(rawCommission) * 100) / 100;
@@ -690,20 +854,18 @@ function saveSale() {
 
   const netAmount = Math.round((grossAmount - commission) * 100) / 100;
   const oldQuantity = availableQuantity;
-  const oldCostBasis = Math.max(0, Number(investment.costBasis ?? investment.value) || 0);
+  const oldCostBasis = Math.max(0,Number(investment.costBasis ?? investment.value) || 0);
   const costBasisSold = oldCostBasis * (quantitySold / oldQuantity);
-  const remainingQuantity = Math.max(0, oldQuantity - quantitySold);
+  const remainingQuantity = Math.max(0,oldQuantity - quantitySold);
   const saleAssetName = investment.name;
 
   account.liquidity = Math.round((Number(account.liquidity) + netAmount) * 100) / 100;
-
   if (remainingQuantity <= 1e-10) {
     account.investments = account.investments.filter(item => item !== investment);
   } else {
     investment.quantity = remainingQuantity;
-    investment.costBasis = Math.round(Math.max(0, oldCostBasis - costBasisSold) * 100) / 100;
+    investment.costBasis = Math.round(Math.max(0,oldCostBasis - costBasisSold) * 100) / 100;
     investment.averagePrice = investment.costBasis / remainingQuantity;
-
     const currentPrice = Number(investment.currentPrice);
     investment.value = Number.isFinite(currentPrice) && currentPrice > 0
       ? Math.round(remainingQuantity * currentPrice * 100) / 100
@@ -711,55 +873,36 @@ function saveSale() {
   }
 
   updateAccountBalance(account);
-
   incomes.unshift({
-    id:makeId(), type:"sale", accountId:account.id, accountName:account.name, accountColor:account.color,
-    description:"Vendita " + saleAssetName, assetName:saleAssetName, quantity:quantitySold,
-    grossAmount:grossAmount, commission:commission, costBasisSold:Math.round(costBasisSold*100)/100,
-    amount:netAmount, date:Date.now()
+    id:makeId(),type:"sale",accountId:account.id,accountName:account.name,accountColor:account.color,
+    description:"Vendita " + saleAssetName,assetName:saleAssetName,quantity:quantitySold,
+    grossAmount:grossAmount,commission:commission,costBasisSold:Math.round(costBasisSold*100)/100,
+    amount:netAmount,date:Date.now()
   });
-
   persist();
   closeSale();
   openAccountDetail(account.id);
 }
 
-function closeSale() {
-  document.getElementById("saleForm").style.display = "none";
-}
+function closeSale() { document.getElementById("saleForm").style.display = "none"; }
 
-function updateInvestmentPrice(accountId, assetName) {
+function updateInvestmentPrice(accountId,assetName) {
   const account = accounts.find(a => String(a.id) === String(accountId));
   if (!account) return;
-
   const investment = account.investments.find(item => item.name === assetName);
   if (!investment) return;
 
-  const rawValue = prompt(
-    "Inserisci il valore attuale TOTALE della posizione " + investment.name + " in euro.\n\nCosto storico: " + euro(investment.costBasis) + "\nValore attuale registrato: " + euro(investment.value),
-    String(Number(investment.value) || 0).replace(".", ",")
-  );
-
+  const rawValue = prompt("Inserisci il valore attuale TOTALE della posizione " + investment.name + " in euro.\n\nCosto storico: " + euro(investment.costBasis) + "\nValore attuale registrato: " + euro(investment.value),String(Number(investment.value) || 0).replace(".",","));
   if (rawValue === null) return;
-
-  const normalizedValue = rawValue.trim().replace(/\s/g, "").replace(",", ".");
+  const normalizedValue = rawValue.trim().replace(/\s/g,"").replace(",",".");
   const currentValue = Number(normalizedValue);
-
-  if (normalizedValue === "" || !Number.isFinite(currentValue) || currentValue < 0) {
-    alert("Inserisci un valore attuale valido, pari o superiore a zero.");
-    return;
-  }
+  if (normalizedValue === "" || !Number.isFinite(currentValue) || currentValue < 0) return alert("Inserisci un valore attuale valido, pari o superiore a zero.");
 
   const oldValue = Number(investment.value) || 0;
   const costBasis = Number(investment.costBasis) || 0;
-
   investment.value = Math.round(currentValue * 100) / 100;
-
   const quantity = Number(investment.quantity);
-  if (Number.isFinite(quantity) && quantity > 0) {
-    investment.currentPrice = investment.value / quantity;
-  }
-
+  if (Number.isFinite(quantity) && quantity > 0) investment.currentPrice = investment.value / quantity;
   updateAccountBalance(account);
   persist();
   openAccountDetail(account.id);
@@ -767,50 +910,31 @@ function updateInvestmentPrice(accountId, assetName) {
   const result = Math.round((investment.value - costBasis) * 100) / 100;
   const change = Math.round((investment.value - oldValue) * 100) / 100;
   const percentage = costBasis > 0 ? (result / costBasis) * 100 : null;
-
-  alert(
-    "Valore aggiornato.\n\n" +
-    "Valore attuale: " + euro(investment.value) + "\n" +
-    "Capitale investito: " + euro(costBasis) + "\n" +
+  alert("Valore aggiornato.\n\nValore attuale: " + euro(investment.value) + "\nCapitale investito: " + euro(costBasis) + "\n" +
     (result > 0 ? "Plusvalenza: +" : result < 0 ? "Minusvalenza: " : "Risultato: ") + euro(result) +
-    (percentage !== null ? " (" + (percentage > 0 ? "+" : "") + percentage.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2}) + "%)" : "") + "\n" +
-    "Variazione dall'ultimo aggiornamento: " + (change > 0 ? "+" : "") + euro(change)
-  );
+    (percentage !== null ? " (" + (percentage > 0 ? "+" : "") + percentage.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2}) + "%)" : "") +
+    "\nVariazione dall'ultimo aggiornamento: " + (change > 0 ? "+" : "") + euro(change));
 }
 
-function editInvestment(accountId, assetName) {
+function editInvestment(accountId,assetName) {
   const account = accounts.find(a => String(a.id) === String(accountId));
   if (!account) return;
-
   const investment = account.investments.find(item => item.name === assetName);
   if (!investment) return;
-
-  closeForm();
-  closeTransfer();
-  closeInternalTransfer();
-  closeIncome();
-  closeSale();
-  closeMovementEditor();
-
-  editingInvestment = {accountId:account.id, investment};
-
+  closeForm(); closeTransfer(); closeInternalTransfer(); closeIncome(); closeSale(); closeMovementEditor();
+  editingInvestment = {accountId:account.id,investment};
   document.getElementById("editInvestmentName").value = investment.name || "";
   document.getElementById("editInvestmentCategory").value = investment.category || "Altro";
-  document.getElementById("editInvestmentQuantity").value =
-    Number(investment.quantity) > 0 ? investment.quantity : "";
-  document.getElementById("editInvestmentCost").value =
-    Number(investment.costBasis ?? investment.value) || 0;
-  document.getElementById("editInvestmentValue").value =
-    Number(investment.value) || 0;
-
+  document.getElementById("editInvestmentQuantity").value = Number(investment.quantity) > 0 ? investment.quantity : "";
+  document.getElementById("editInvestmentCost").value = Number(investment.costBasis ?? investment.value) || 0;
+  document.getElementById("editInvestmentValue").value = Number(investment.value) || 0;
   document.getElementById("investmentEditForm").style.display = "block";
   document.getElementById("investmentEditForm").scrollIntoView({behavior:"smooth"});
 }
 
 function saveInvestmentEdit() {
   if (!editingInvestment) return alert("Nessun investimento selezionato.");
-
-  const {accountId, investment} = editingInvestment;
+  const {accountId,investment} = editingInvestment;
   const account = accounts.find(a => String(a.id) === String(accountId));
   if (!account || !account.investments.includes(investment)) {
     closeInvestmentEditor();
@@ -822,29 +946,17 @@ function saveInvestmentEdit() {
   const rawQuantity = document.getElementById("editInvestmentQuantity").value.trim();
   const rawCost = document.getElementById("editInvestmentCost").value.trim();
   const rawValue = document.getElementById("editInvestmentValue").value.trim();
-
   const quantity = rawQuantity === "" ? null : Number(rawQuantity);
   const costBasis = Number(rawCost);
   const value = Number(rawValue);
 
   if (!name) return alert("Inserisci il nome dell'investimento.");
   if (!category) return alert("Inserisci la categoria dell'investimento.");
-
-  const duplicate = account.investments.find(item =>
-    item !== investment &&
-    String(item.name || "").toLocaleLowerCase("it-IT") === name.toLocaleLowerCase("it-IT")
-  );
+  const duplicate = account.investments.find(item => item !== investment && String(item.name || "").toLocaleLowerCase("it-IT") === name.toLocaleLowerCase("it-IT"));
   if (duplicate) return alert("Esiste già un investimento con questo nome in questo conto.");
-
-  if (quantity !== null && (!Number.isFinite(quantity) || quantity <= 0)) {
-    return alert("Inserisci una quantità valida oppure lascia il campo vuoto.");
-  }
-  if (rawCost === "" || !Number.isFinite(costBasis) || costBasis < 0) {
-    return alert("Inserisci un capitale investito valido, pari o superiore a zero.");
-  }
-  if (rawValue === "" || !Number.isFinite(value) || value < 0) {
-    return alert("Inserisci un valore attuale valido, pari o superiore a zero.");
-  }
+  if (quantity !== null && (!Number.isFinite(quantity) || quantity <= 0)) return alert("Inserisci una quantità valida oppure lascia il campo vuoto.");
+  if (rawCost === "" || !Number.isFinite(costBasis) || costBasis < 0) return alert("Inserisci un capitale investito valido, pari o superiore a zero.");
+  if (rawValue === "" || !Number.isFinite(value) || value < 0) return alert("Inserisci un valore attuale valido, pari o superiore a zero.");
 
   investment.name = name;
   investment.category = category;
@@ -853,11 +965,7 @@ function saveInvestmentEdit() {
   investment.value = Math.round(value * 100) / 100;
   investment.averagePrice = quantity > 0 ? investment.costBasis / quantity : null;
   investment.currentPrice = quantity > 0 ? investment.value / quantity : null;
-
-  if (!investmentCategories.some(item => item.toLocaleLowerCase("it-IT") === category.toLocaleLowerCase("it-IT"))) {
-    investmentCategories.push(category);
-  }
-
+  if (!investmentCategories.some(item => item.toLocaleLowerCase("it-IT") === category.toLocaleLowerCase("it-IT"))) investmentCategories.push(category);
   updateAccountBalance(account);
   closeInvestmentEditor();
   persist();
@@ -869,15 +977,12 @@ function closeInvestmentEditor() {
   editingInvestment = null;
 }
 
-function deleteInvestment(accountId, assetName) {
+function deleteInvestment(accountId,assetName) {
   const account = accounts.find(a => String(a.id) === String(accountId));
   if (!account) return;
-
   const investment = account.investments.find(item => item.name === assetName);
   if (!investment) return;
-
   if (!confirm('Vuoi eliminare l\'investimento "' + investment.name + '"? Il valore verrà rimosso dal patrimonio, senza aggiungere denaro alla liquidità.')) return;
-
   account.investments = account.investments.filter(item => item !== investment);
   updateAccountBalance(account);
   persist();
@@ -904,31 +1009,18 @@ function deleteSelectedAccount() {
   deleteAccount(id);
 }
 
-function movementDescriptor(item, collection) {
+function movementDescriptor(item,collection) {
   if (collection === "transfers") {
-    return {
-      id:item.id, collection:"transfers", item,
-      type:item.internal ? "purchase" : "transfer",
-      accountId:item.fromId || item.accountId || null,
-      fromId:item.fromId || null, toId:item.toId || null,
-      amount:item.amount, description:item.assetName || (item.internal ? "Acquisto investimento" : "Trasferimento"),
-      quantity:item.quantity, commission:item.commission, date:item.date
-    };
+    return {id:item.id,collection:"transfers",item,type:item.internal ? "purchase" : "transfer",
+      accountId:item.fromId || item.accountId || null,fromId:item.fromId || null,toId:item.toId || null,
+      amount:item.amount,description:item.assetName || (item.internal ? "Acquisto investimento" : "Trasferimento"),
+      quantity:item.quantity,commission:item.commission,date:item.date};
   }
-
-  return {
-    id:item.id, collection:"incomes", item,
-    type:item.type || "income",
-    accountId:item.accountId || null,
-    amount:item.amount,
-    description:item.description || "",
-    quantity:item.quantity,
-    commission:item.commission,
-    date:item.date
-  };
+  return {id:item.id,collection:"incomes",item,type:item.type || "income",accountId:item.accountId || null,
+    amount:item.amount,description:item.description || "",quantity:item.quantity,commission:item.commission,date:item.date};
 }
 
-function getMovement(collection, id) {
+function getMovement(collection,id) {
   const list = collection === "transfers" ? transfers : incomes;
   return list.find(item => String(item.id) === String(id));
 }
@@ -937,19 +1029,14 @@ function renderTransfers() {
   const container = document.getElementById("transferHistory");
   const button = document.getElementById("showMore");
   container.innerHTML = "";
-
   const movements = [
-    ...transfers.map(t => ({...t, type:"transfer", collection:"transfers", id:t.id})),
-    ...incomes.map(i => ({...i, type:i.type || "income", collection:"incomes", id:i.id}))
+    ...transfers.map(t => ({...t,type:"transfer",collection:"transfers",id:t.id})),
+    ...incomes.map(i => ({...i,type:i.type || "income",collection:"incomes",id:i.id}))
   ];
-
-  movements.sort((a, b) => (Number(b.date) || 0) - (Number(a.date) || 0));
-
+  movements.sort((a,b) => (Number(b.date) || 0) - (Number(a.date) || 0));
   button.style.display = movements.length > 5 ? "block" : "none";
   button.textContent = showAllTransfers ? "Mostra meno" : "Mostra altro";
-
-  const visible = showAllTransfers ? movements : movements.slice(0, 5);
-
+  const visible = showAllTransfers ? movements : movements.slice(0,5);
   if (!visible.length) {
     container.innerHTML = '<div class="empty">Non hai ancora effettuato movimenti.</div>';
     return;
@@ -958,17 +1045,13 @@ function renderTransfers() {
   visible.forEach(m => {
     const row = document.createElement("div");
     row.className = "transferRow";
-
     const left = document.createElement("div");
     left.className = "transferName";
     left.style.flex = "1";
-
     const middle = document.createElement("div");
     middle.className = "transferMiddle";
-
     const amount = document.createElement("span");
     amount.className = "transferAmount";
-
     const right = document.createElement("div");
     right.className = "transferName";
     right.style.textAlign = "right";
@@ -979,11 +1062,10 @@ function renderTransfers() {
       amount.textContent = (m.preexisting ? "" : "− ") + euro(m.amount);
       right.textContent = m.fromName || "Conto non specificato";
       right.style.color = m.fromColor || "#777";
-
       const asset = document.createElement("span");
       asset.className = "assetName";
       asset.textContent = (m.assetName || "Investimento") + (Number(m.quantity) > 0 ? " · Quantità: " + Number(m.quantity).toLocaleString("it-IT",{maximumFractionDigits:8}) : "");
-      middle.append(amount, asset);
+      middle.append(amount,asset);
     } else if (m.collection === "transfers") {
       left.textContent = m.fromName || "Conto non specificato";
       left.style.color = m.fromColor || "#777";
@@ -997,11 +1079,10 @@ function renderTransfers() {
       amount.textContent = "+ " + euro(m.amount);
       right.textContent = m.accountName || "Conto non specificato";
       right.style.color = m.accountColor || "#777";
-
       const asset = document.createElement("span");
       asset.className = "assetName";
       asset.textContent = (m.assetName || "Investimento") + (Number(m.quantity) > 0 ? " · Quantità: " + Number(m.quantity).toLocaleString("it-IT",{maximumFractionDigits:8}) : "");
-      middle.append(amount, asset);
+      middle.append(amount,asset);
     } else {
       left.textContent = m.description || (m.type === "expense" ? "Uscita" : "Entrata");
       left.style.color = m.type === "expense" ? "#E05260" : "#18A779";
@@ -1020,14 +1101,13 @@ function renderTransfers() {
     editButton.type = "button";
     editButton.className = "movementEdit";
     editButton.textContent = "✎";
-    editButton.setAttribute("aria-label", "Modifica movimento");
+    editButton.setAttribute("aria-label","Modifica movimento");
     editButton.title = "Modifica movimento";
     editButton.onclick = event => {
       event.stopPropagation();
-      openMovementEditor(m.collection, m.id);
+      openMovementEditor(m.collection,m.id);
     };
-
-    row.append(left, middle, right, editButton);
+    row.append(left,middle,right,editButton);
     container.append(row);
   });
 }
@@ -1040,20 +1120,17 @@ function toggleTransfers() {
 function renderColors() {
   const container = document.getElementById("colors");
   container.innerHTML = "";
-
   palette.forEach(color => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "color" + (selectedColor === color ? " selected" : "");
     button.style.background = color;
-    button.setAttribute("aria-label", "Seleziona colore");
-    button.setAttribute("aria-pressed", selectedColor === color);
-
+    button.setAttribute("aria-label","Seleziona colore");
+    button.setAttribute("aria-pressed",selectedColor === color);
     button.onclick = () => {
       selectedColor = color;
       renderColors();
     };
-
     container.append(button);
   });
 }
@@ -1061,86 +1138,59 @@ function renderColors() {
 function renderInvestmentCategories(selected) {
   const select = document.getElementById("investmentCategory");
   select.innerHTML = "";
-
   investmentCategories.forEach(category => {
     const option = document.createElement("option");
     option.value = category;
     option.textContent = category;
     select.append(option);
   });
-
   const createOption = document.createElement("option");
   createOption.value = "__new_category__";
   createOption.textContent = "＋ Crea nuova categoria";
   select.append(createOption);
-
   select.value = investmentCategories.includes(selected) ? selected : "Altro";
 }
 
 function handleCategoryChange() {
   const select = document.getElementById("investmentCategory");
   if (select.value !== "__new_category__") return;
-
   const category = prompt("Nome della nuova categoria:");
   const name = category ? category.trim() : "";
-
   if (!name) {
     select.value = "Altro";
     return;
   }
-
   const existing = investmentCategories.find(item => item.toLocaleLowerCase("it-IT") === name.toLocaleLowerCase("it-IT"));
-
   if (existing) {
     select.value = existing;
     return;
   }
-
   investmentCategories.push(name);
-  localStorage.setItem("rendiconto_categorie_investimenti", JSON.stringify(investmentCategories));
+  localStorage.setItem("rendiconto_categorie_investimenti",JSON.stringify(investmentCategories));
   renderInvestmentCategories(name);
 }
 
 function newAccount() {
-  closeAccountDetail();
-  closeTransfer();
-  closeInternalTransfer();
-  closeIncome();
-  closeSale();
-  closeMovementEditor();
-  closeInvestmentEditor();
-
+  closeAccountDetail(); closeTransfer(); closeInternalTransfer(); closeIncome(); closeSale(); closeMovementEditor(); closeInvestmentEditor();
   editingId = null;
   selectedColor = palette[accounts.length % palette.length];
-
   document.getElementById("formTitle").textContent = "Nuovo conto";
   document.getElementById("name").value = "";
   document.getElementById("balance").value = "";
-
   renderColors();
   document.getElementById("form").style.display = "block";
   document.getElementById("name").focus();
 }
 
 function editAccount(id) {
-  closeAccountDetail();
-  closeTransfer();
-  closeInternalTransfer();
-  closeIncome();
-  closeSale();
-  closeMovementEditor();
-  closeInvestmentEditor();
-
+  closeAccountDetail(); closeTransfer(); closeInternalTransfer(); closeIncome(); closeSale(); closeMovementEditor(); closeInvestmentEditor();
   const a = accounts.find(item => String(item.id) === String(id));
   if (!a) return;
-
   editingId = a.id;
   selectedColor = a.color || palette[0];
-
   document.getElementById("formTitle").textContent = "Modifica conto";
   document.getElementById("name").value = a.name || "";
   document.getElementById("balance").value = a.balance ?? "";
-
   renderColors();
   document.getElementById("form").style.display = "block";
   document.getElementById("form").scrollIntoView({behavior:"smooth"});
@@ -1149,26 +1199,25 @@ function editAccount(id) {
 function saveAccount() {
   const name = document.getElementById("name").value.trim();
   const rawBalance = document.getElementById("balance").value.trim();
-
   if (!name) return alert("Inserisci il nome del conto.");
   if (rawBalance === "" || !Number.isFinite(Number(rawBalance))) return alert("Inserisci un saldo valido.");
-
   const balance = Number(rawBalance);
 
   if (editingId !== null) {
     const a = accounts.find(item => String(item.id) === String(editingId));
-
     if (a) {
       a.name = name;
       a.liquidity = Math.round((balance - investmentTotal(a)) * 100) / 100;
       a.color = selectedColor;
       updateAccountBalance(a);
       updateMovementAccountNames(a);
+      if (name === "Contanti") ensurePiggybank(a);
     }
   } else {
-    accounts.push({id:makeId(),name,balance,liquidity:balance,investments:[],color:selectedColor});
+    const account = {id:makeId(),name,balance,liquidity:balance,investments:[],color:selectedColor};
+    if (name === "Contanti") ensurePiggybank(account);
+    accounts.push(account);
   }
-
   persist();
   closeForm();
 }
@@ -1179,13 +1228,11 @@ function updateMovementAccountNames(account) {
       item.fromName = account.name;
       item.fromColor = account.color;
     }
-
     if (String(item.toId) === String(account.id) || (!item.toId && item.toName === account.name)) {
       item.toName = account.name;
       item.toColor = account.color;
     }
   });
-
   incomes.forEach(item => {
     if (String(item.accountId) === String(account.id) || (!item.accountId && item.accountName === account.name)) {
       item.accountName = account.name;
@@ -1197,7 +1244,6 @@ function updateMovementAccountNames(account) {
 function deleteAccount(id) {
   const a = accounts.find(item => String(item.id) === String(id));
   if (!a) return;
-
   if (confirm('Vuoi eliminare il conto "' + a.name + '"?')) {
     accounts = accounts.filter(item => String(item.id) !== String(id));
     persist();
@@ -1209,59 +1255,41 @@ function closeForm() {
   editingId = null;
 }
 
-function fillAccountSelect(select, selectedId, includeBlank) {
+function fillAccountSelect(select,selectedId,includeBlank) {
   select.innerHTML = "";
-
   if (includeBlank) {
     const blank = document.createElement("option");
     blank.value = "";
     blank.textContent = "Non specificato";
     select.append(blank);
   }
-
   accounts.forEach(account => {
     const option = document.createElement("option");
     option.value = account.id;
     option.textContent = account.name || "Conto senza nome";
     select.append(option);
   });
-
   if (selectedId !== undefined && selectedId !== null) select.value = String(selectedId);
   if (includeBlank && selectedId === null) select.value = "";
 }
 
 function openTransfer() {
-  closeForm();
-  closeAccountDetail();
-  closeInternalTransfer();
-  closeIncome();
-  closeSale();
-  closeMovementEditor();
-  closeInvestmentEditor();
-
-  if (accounts.length < 2) {
-    alert("Devi avere almeno due conti per effettuare un trasferimento.");
-    return;
-  }
-
+  closeForm(); closeAccountDetail(); closeInternalTransfer(); closeIncome(); closeSale(); closeMovementEditor(); closeInvestmentEditor();
+  if (accounts.length < 2) return alert("Devi avere almeno due conti per effettuare un trasferimento.");
   const from = document.getElementById("from");
   const to = document.getElementById("to");
-
   from.innerHTML = "";
   to.innerHTML = "";
-
   accounts.forEach(a => {
     const optionFrom = document.createElement("option");
     optionFrom.value = a.id;
     optionFrom.textContent = a.name + " (Liquidità: " + euro(a.liquidity) + ")";
     from.append(optionFrom);
-
     const optionTo = document.createElement("option");
     optionTo.value = a.id;
     optionTo.textContent = a.name;
     to.append(optionTo);
   });
-
   to.selectedIndex = 1;
   document.getElementById("transferAmount").value = "";
   document.getElementById("transferForm").style.display = "block";
@@ -1273,50 +1301,29 @@ function saveTransfer() {
   const toId = document.getElementById("to").value;
   const rawAmount = document.getElementById("transferAmount").value.trim();
   const amount = Math.round(Number(rawAmount) * 100) / 100;
-
   if (fromId === toId) return alert("Scegli due conti diversi.");
   if (rawAmount === "" || !Number.isFinite(amount) || amount <= 0) return alert("Inserisci un importo valido.");
-
   const from = accounts.find(a => String(a.id) === String(fromId));
   const to = accounts.find(a => String(a.id) === String(toId));
-
   if (!from || !to) return alert("Seleziona due conti validi.");
   if (Math.round(Number(from.liquidity) * 100) < Math.round(amount * 100)) return alert("Liquidità insufficiente nel conto di partenza.");
-
   from.liquidity = Math.round((Number(from.liquidity) - amount) * 100) / 100;
   to.liquidity = Math.round((Number(to.liquidity) + amount) * 100) / 100;
-
   updateAccountBalance(from);
   updateAccountBalance(to);
-
-  transfers.unshift({
-    id:makeId(),fromId:from.id,fromName:from.name,fromColor:from.color,
-    toId:to.id,toName:to.name,toColor:to.color,amount,date:Date.now()
-  });
-
+  transfers.unshift({id:makeId(),fromId:from.id,fromName:from.name,fromColor:from.color,toId:to.id,toName:to.name,toColor:to.color,amount,date:Date.now()});
   persist();
   closeTransfer();
 }
 
-function closeTransfer() {
-  document.getElementById("transferForm").style.display = "none";
-}
+function closeTransfer() { document.getElementById("transferForm").style.display = "none"; }
 
 function openInternalTransfer() {
   if (selectedAccountId === null) return;
-
   const account = accounts.find(a => String(a.id) === String(selectedAccountId));
   if (!account) return;
-
-  closeForm();
-  closeTransfer();
-  closeIncome();
-  closeSale();
-  closeMovementEditor();
-  closeInvestmentEditor();
-
+  closeForm(); closeTransfer(); closeIncome(); closeSale(); closeMovementEditor(); closeInvestmentEditor();
   internalTransferAccountId = account.id;
-
   document.getElementById("internalTransferTitle").textContent = "Acquisto da " + account.name + " agli investimenti";
   document.getElementById("investmentName").value = "";
   document.getElementById("internalTransferAmount").value = "";
@@ -1324,7 +1331,6 @@ function openInternalTransfer() {
   document.getElementById("investmentQuantity").value = "";
   document.getElementById("investmentReceivedValue").value = "";
   document.getElementById("preexistingInvestment").checked = false;
-
   renderInvestmentCategories("Azioni");
   document.getElementById("internalTransferForm").style.display = "block";
   document.getElementById("internalTransferForm").scrollIntoView({behavior:"smooth"});
@@ -1333,7 +1339,6 @@ function openInternalTransfer() {
 function saveInternalTransfer() {
   const account = accounts.find(a => String(a.id) === String(internalTransferAccountId));
   if (!account) return alert("Seleziona un conto valido.");
-
   const assetName = document.getElementById("investmentName").value.trim();
   const category = document.getElementById("investmentCategory").value;
   const rawAmount = document.getElementById("internalTransferAmount").value.trim();
@@ -1341,7 +1346,6 @@ function saveInternalTransfer() {
   const rawQuantity = document.getElementById("investmentQuantity").value.trim();
   const rawReceivedValue = document.getElementById("investmentReceivedValue").value.trim();
   const preexisting = document.getElementById("preexistingInvestment").checked;
-
   const amount = Math.round(Number(rawAmount) * 100) / 100;
   const unitPrice = rawUnitPrice === "" ? null : Number(rawUnitPrice);
   const quantity = rawQuantity === "" ? null : Number(rawQuantity);
@@ -1353,45 +1357,28 @@ function saveInternalTransfer() {
   if (unitPrice !== null && (!Number.isFinite(unitPrice) || unitPrice <= 0)) return alert("Il prezzo unitario deve essere maggiore di zero oppure lasciato vuoto.");
   if (quantity !== null && (!Number.isFinite(quantity) || quantity <= 0)) return alert("La quantità deve essere maggiore di zero oppure lasciata vuota.");
   if (receivedValue !== null && (!Number.isFinite(receivedValue) || receivedValue < 0)) return alert("Il valore effettivamente ricevuto deve essere pari o superiore a zero oppure lasciato vuoto.");
-
   if (!preexisting && Math.round(Number(account.liquidity) * 100) < Math.round(amount * 100)) {
     if (!confirm("La liquidità del conto è insufficiente. Vuoi registrare comunque l'acquisto, consentendo alla liquidità di diventare negativa? Se stai inserendo un investimento che possedevi già, annulla e seleziona l'opzione 'Investimento già posseduto'.")) return;
   }
 
   let initialValue;
-  if (receivedValue !== null) {
-    initialValue = receivedValue;
-  } else if (quantity !== null && unitPrice !== null) {
-    initialValue = quantity * unitPrice;
-  } else {
-    initialValue = amount;
-  }
-
+  if (receivedValue !== null) initialValue = receivedValue;
+  else if (quantity !== null && unitPrice !== null) initialValue = quantity * unitPrice;
+  else initialValue = amount;
   initialValue = Math.round(initialValue * 100) / 100;
-
-  if (!preexisting) {
-    account.liquidity = Math.round((Number(account.liquidity) - amount) * 100) / 100;
-  }
+  if (!preexisting) account.liquidity = Math.round((Number(account.liquidity) - amount) * 100) / 100;
 
   let investment = account.investments.find(item => item.name.toLocaleLowerCase("it-IT") === assetName.toLocaleLowerCase("it-IT"));
-
   if (investment) {
     const oldQuantity = Number(investment.quantity);
     const hasOldQuantity = Number.isFinite(oldQuantity) && oldQuantity > 0;
     const oldCostBasis = Number(investment.costBasis ?? investment.value) || 0;
     const oldValue = Number(investment.value) || 0;
-
     investment.costBasis = Math.round((oldCostBasis + amount) * 100) / 100;
     investment.value = Math.round((oldValue + initialValue) * 100) / 100;
-
-    if (quantity !== null) {
-      investment.quantity = hasOldQuantity ? oldQuantity + quantity : quantity;
-    } else if (!hasOldQuantity) {
-      investment.quantity = null;
-    }
-
+    if (quantity !== null) investment.quantity = hasOldQuantity ? oldQuantity + quantity : quantity;
+    else if (!hasOldQuantity) investment.quantity = null;
     const totalQuantity = Number(investment.quantity);
-
     if (Number.isFinite(totalQuantity) && totalQuantity > 0) {
       investment.averagePrice = investment.costBasis / totalQuantity;
       investment.currentPrice = investment.value / totalQuantity;
@@ -1399,44 +1386,20 @@ function saveInternalTransfer() {
       investment.averagePrice = null;
       investment.currentPrice = unitPrice;
     }
-
     investment.category = category;
   } else {
-    const storedQuantity = quantity;
-    investment = {
-      name:assetName,
-      category,
-      value:initialValue,
-      costBasis:amount,
-      quantity:storedQuantity,
-      averagePrice:storedQuantity !== null ? amount / storedQuantity : null,
-      currentPrice:storedQuantity !== null && storedQuantity > 0 ? initialValue / storedQuantity : unitPrice
-    };
-
+    investment = {name:assetName,category,value:initialValue,costBasis:amount,quantity,
+      averagePrice:quantity !== null ? amount / quantity : null,
+      currentPrice:quantity !== null && quantity > 0 ? initialValue / quantity : unitPrice};
     account.investments.push(investment);
   }
 
   updateAccountBalance(account);
-
   transfers.unshift({
-    id:makeId(),
-    fromId:account.id,
-    fromName:account.name,
-    fromColor:account.color,
-    toId:account.id,
-    toName:account.name,
-    toColor:account.color,
-    amount,
-    assetName,
-    quantity,
-    category,
-    unitPrice,
-    receivedValue:initialValue,
-    preexisting,
-    internal:true,
-    date:Date.now()
+    id:makeId(),fromId:account.id,fromName:account.name,fromColor:account.color,
+    toId:account.id,toName:account.name,toColor:account.color,amount,assetName,quantity,
+    category,unitPrice,receivedValue:initialValue,preexisting,internal:true,date:Date.now()
   });
-
   persist();
   closeInternalTransfer();
   openAccountDetail(account.id);
@@ -1448,26 +1411,16 @@ function closeInternalTransfer() {
 }
 
 function openIncome() {
-  closeForm();
-  closeTransfer();
-  closeInternalTransfer();
-  closeAccountDetail();
-  closeSale();
-  closeMovementEditor();
-  closeInvestmentEditor();
-
+  closeForm(); closeTransfer(); closeInternalTransfer(); closeAccountDetail(); closeSale(); closeMovementEditor(); closeInvestmentEditor();
   if (!accounts.length) return alert("Devi prima aggiungere almeno un conto.");
-
   const select = document.getElementById("incomeAccount");
   select.innerHTML = "";
-
   accounts.forEach(a => {
     const option = document.createElement("option");
     option.value = a.id;
     option.textContent = a.name + " (Liquidità: " + euro(a.liquidity) + ")";
     select.append(option);
   });
-
   document.getElementById("movementType").value = "income";
   document.getElementById("incomeAmount").value = "";
   document.getElementById("incomeDescription").value = "";
@@ -1481,33 +1434,20 @@ function saveIncome() {
   const amount = Math.round(Number(rawAmount) * 100) / 100;
   const description = document.getElementById("incomeDescription").value.trim();
   const type = document.getElementById("movementType").value;
-
   if (rawAmount === "" || !Number.isFinite(amount) || amount <= 0) return alert("Inserisci un importo valido.");
-
   const account = accounts.find(a => String(a.id) === String(accountId));
   if (!account) return alert("Seleziona un conto valido.");
-
   if (type === "expense" && Math.round(Number(account.liquidity) * 100) < Math.round(amount * 100)) return alert("Liquidità insufficiente nel conto selezionato.");
-
   const change = type === "expense" ? -amount : amount;
   account.liquidity = Math.round((Number(account.liquidity) + change) * 100) / 100;
-
   updateAccountBalance(account);
-
-  incomes.unshift({
-    id:makeId(),type,accountId:account.id,accountName:account.name,accountColor:account.color,
-    description:description || (type === "expense" ? "Uscita" : "Entrata"),amount,date:Date.now()
-  });
-
+  incomes.unshift({id:makeId(),type,accountId:account.id,accountName:account.name,accountColor:account.color,
+    description:description || (type === "expense" ? "Uscita" : "Entrata"),amount,date:Date.now()});
   persist();
   closeIncome();
 }
 
-function closeIncome() {
-  document.getElementById("incomeForm").style.display = "none";
-}
-
-/* Modifica dei movimenti */
+function closeIncome() { document.getElementById("incomeForm").style.display = "none"; }
 
 function dateInputValue(timestamp) {
   if (!timestamp || !Number.isFinite(Number(timestamp))) return "";
@@ -1515,45 +1455,27 @@ function dateInputValue(timestamp) {
   return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
 }
 
-function movementTypeFor(collection, item) {
+function movementTypeFor(collection,item) {
   if (collection === "transfers") return item.internal ? "purchase" : "transfer";
   return item.type === "sale" ? "sale" : (item.type === "expense" ? "expense" : "income");
 }
 
-function openMovementEditor(collection, id) {
-  const item = getMovement(collection, id);
-
-  if (!item) {
-    alert("Non riesco a individuare questo movimento nei dati salvati. Aggiorna la cronologia e riprova.");
-    return;
-  }
-
-  closeForm();
-  closeTransfer();
-  closeInternalTransfer();
-  closeIncome();
-  closeSale();
-  closeAccountDetail();
-  closeInvestmentEditor();
-
-  editingMovement = {collection, id:String(id)};
-
-  const type = movementTypeFor(collection, item);
-
+function openMovementEditor(collection,id) {
+  const item = getMovement(collection,id);
+  if (!item) return alert("Non riesco a individuare questo movimento nei dati salvati. Aggiorna la cronologia e riprova.");
+  closeForm(); closeTransfer(); closeInternalTransfer(); closeIncome(); closeSale(); closeAccountDetail(); closeInvestmentEditor();
+  editingMovement = {collection,id:String(id)};
+  const type = movementTypeFor(collection,item);
   document.getElementById("editMovementType").value = type;
-
-  fillAccountSelect(document.getElementById("editMovementAccount"), item.accountId || item.fromId || findAccountIdByName(item.accountName || item.fromName), true);
-  fillAccountSelect(document.getElementById("editFromAccount"), item.fromId || findAccountIdByName(item.fromName), true);
-  fillAccountSelect(document.getElementById("editToAccount"), item.toId || findAccountIdByName(item.toName), true);
-
+  fillAccountSelect(document.getElementById("editMovementAccount"),item.accountId || item.fromId || findAccountIdByName(item.accountName || item.fromName),true);
+  fillAccountSelect(document.getElementById("editFromAccount"),item.fromId || findAccountIdByName(item.fromName),true);
+  fillAccountSelect(document.getElementById("editToAccount"),item.toId || findAccountIdByName(item.toName),true);
   document.getElementById("editMovementAmount").value = item.amount === undefined || item.amount === null ? "" : item.amount;
   document.getElementById("editMovementDescription").value = item.description || item.assetName || "";
   document.getElementById("editMovementQuantity").value = item.quantity === undefined || item.quantity === null ? "" : item.quantity;
   document.getElementById("editMovementCommission").value = item.commission === undefined || item.commission === null ? "" : item.commission;
   document.getElementById("editMovementDate").value = dateInputValue(item.date);
-
   updateMovementEditorFields();
-
   document.getElementById("movementEditForm").style.display = "block";
   document.getElementById("movementEditForm").scrollIntoView({behavior:"smooth"});
 }
@@ -1566,13 +1488,10 @@ function findAccountIdByName(name) {
 
 function updateMovementEditorFields() {
   const type = document.getElementById("editMovementType").value;
-
   document.getElementById("editTransferFields").style.display = type === "transfer" ? "block" : "none";
   document.getElementById("editInvestmentFields").style.display = (type === "purchase" || type === "sale") ? "block" : "none";
   document.getElementById("editMovementAccount").parentElement.style.display = type === "transfer" ? "none" : "block";
-
   const amountLabel = document.querySelector('label[for="editMovementAmount"]');
-
   if (type === "purchase") amountLabel.textContent = "Importo speso (€)";
   else if (type === "sale") amountLabel.textContent = "Importo netto incassato (€)";
   else amountLabel.textContent = "Importo (€)";
@@ -1583,28 +1502,24 @@ function closeMovementEditor() {
   editingMovement = null;
 }
 
-function roundMoney(value) {
-  return Math.round((Number(value) || 0) * 100) / 100;
-}
+function roundMoney(value) { return Math.round((Number(value) || 0) * 100) / 100; }
 
 function accountById(id) {
   if (id === "" || id === null || id === undefined) return null;
   return accounts.find(a => String(a.id) === String(id)) || null;
 }
 
-function findInvestment(account, name) {
+function findInvestment(account,name) {
   if (!account || !name) return null;
   return (account.investments || []).find(i => String(i.name || "").toLocaleLowerCase("it-IT") === String(name).toLocaleLowerCase("it-IT")) || null;
 }
 
-function reverseMovementEffect(collection, item) {
-  const type = movementTypeFor(collection, item);
+function reverseMovementEffect(collection,item) {
+  const type = movementTypeFor(collection,item);
   const amount = Number(item.amount) || 0;
-
   if (type === "transfer") {
     const from = accountById(item.fromId) || accounts.find(a => a.name === item.fromName);
     const to = accountById(item.toId) || accounts.find(a => a.name === item.toName);
-
     if (from) from.liquidity = roundMoney(Number(from.liquidity) + amount);
     if (to) to.liquidity = roundMoney(Number(to.liquidity) - amount);
     if (from) updateAccountBalance(from);
@@ -1615,53 +1530,37 @@ function reverseMovementEffect(collection, item) {
   const account = accountById(item.accountId) || accountById(item.fromId) || accounts.find(a => a.name === (item.accountName || item.fromName));
   if (!account) return;
 
-  if (type === "income") {
+  if (type === "income") account.liquidity = roundMoney(Number(account.liquidity) - amount);
+  else if (type === "expense") account.liquidity = roundMoney(Number(account.liquidity) + amount);
+  else if (type === "sale") {
     account.liquidity = roundMoney(Number(account.liquidity) - amount);
-  } else if (type === "expense") {
-    account.liquidity = roundMoney(Number(account.liquidity) + amount);
-  } else if (type === "sale") {
-    account.liquidity = roundMoney(Number(account.liquidity) - amount);
-
-    const assetName = item.assetName || (item.description || "").replace(/^Vendita\s*/i, "");
-    let investment = findInvestment(account, assetName);
+    const assetName = item.assetName || (item.description || "").replace(/^Vendita\s*/i,"");
+    let investment = findInvestment(account,assetName);
     const quantity = Number(item.quantity);
-
     if (quantity > 0) {
       if (!investment) {
-        investment = {
-          name:assetName || "Investimento recuperato",category:"Altro",quantity:0,
-          value:0,costBasis:0,averagePrice:0,currentPrice:null
-        };
+        investment = {name:assetName || "Investimento recuperato",category:"Altro",quantity:0,value:0,costBasis:0,averagePrice:0,currentPrice:null};
         account.investments.push(investment);
       }
-
       const restoredCost = Number(item.costBasisSold);
       const priorQuantity = Number(investment.quantity) || 0;
       const priorCost = Number(investment.costBasis) || 0;
-
       investment.quantity = priorQuantity + quantity;
       investment.costBasis = roundMoney(priorCost + (Number.isFinite(restoredCost) ? restoredCost : 0));
       investment.averagePrice = investment.quantity > 0 ? investment.costBasis / investment.quantity : null;
-
       if (Number(investment.currentPrice) > 0) investment.value = roundMoney(investment.quantity * Number(investment.currentPrice));
       else investment.value = roundMoney(Number(investment.value) + amount);
     }
   } else if (type === "purchase") {
     if (!item.preexisting) account.liquidity = roundMoney(Number(account.liquidity) + amount);
-
     const assetName = item.assetName || item.description;
-    const investment = findInvestment(account, assetName);
+    const investment = findInvestment(account,assetName);
     const quantity = Number(item.quantity);
-
     if (investment) {
       const addedValue = Number(item.receivedValue ?? item.amount) || 0;
-      investment.value = Math.max(0, roundMoney(Number(investment.value) - addedValue));
-      investment.costBasis = Math.max(0, roundMoney((Number(investment.costBasis) || 0) - amount));
-
-      if (quantity > 0 && Number(investment.quantity) > 0) {
-        investment.quantity = Math.max(0, Number(investment.quantity) - quantity);
-      }
-
+      investment.value = Math.max(0,roundMoney(Number(investment.value) - addedValue));
+      investment.costBasis = Math.max(0,roundMoney((Number(investment.costBasis) || 0) - amount));
+      if (quantity > 0 && Number(investment.quantity) > 0) investment.quantity = Math.max(0,Number(investment.quantity) - quantity);
       if (Number(investment.quantity) <= 1e-10) {
         investment.quantity = null;
         investment.averagePrice = null;
@@ -1670,24 +1569,18 @@ function reverseMovementEffect(collection, item) {
         investment.averagePrice = investment.costBasis / Number(investment.quantity);
         investment.currentPrice = investment.value / Number(investment.quantity);
       }
-
-      if (investment.costBasis <= 0 && investment.value <= 0) {
-        account.investments = account.investments.filter(i => i !== investment);
-      }
+      if (investment.costBasis <= 0 && investment.value <= 0) account.investments = account.investments.filter(i => i !== investment);
     }
   }
-
   updateAccountBalance(account);
 }
 
-function applyMovementEffect(collection, item) {
-  const type = movementTypeFor(collection, item);
+function applyMovementEffect(collection,item) {
+  const type = movementTypeFor(collection,item);
   const amount = Number(item.amount) || 0;
-
   if (type === "transfer") {
     const from = accountById(item.fromId);
     const to = accountById(item.toId);
-
     if (from) from.liquidity = roundMoney(Number(from.liquidity) - amount);
     if (to) to.liquidity = roundMoney(Number(to.liquidity) + amount);
     if (from) updateAccountBalance(from);
@@ -1697,88 +1590,62 @@ function applyMovementEffect(collection, item) {
 
   const account = accountById(item.accountId);
   if (!account) return;
-
-  if (type === "income") {
-    account.liquidity = roundMoney(Number(account.liquidity) + amount);
-  } else if (type === "expense") {
-    account.liquidity = roundMoney(Number(account.liquidity) - amount);
-  } else if (type === "purchase") {
+  if (type === "income") account.liquidity = roundMoney(Number(account.liquidity) + amount);
+  else if (type === "expense") account.liquidity = roundMoney(Number(account.liquidity) - amount);
+  else if (type === "purchase") {
     const assetName = item.assetName || item.description || "";
     const quantity = Number(item.quantity);
     const addedValue = Number(item.receivedValue ?? item.amount) || 0;
-
     if (!item.preexisting) account.liquidity = roundMoney(Number(account.liquidity) - amount);
-
     if (assetName) {
-      let investment = findInvestment(account, assetName);
-
+      let investment = findInvestment(account,assetName);
       if (investment) {
         const oldQuantity = Number(investment.quantity);
         const hasOldQuantity = Number.isFinite(oldQuantity) && oldQuantity > 0;
         const oldCost = Number(investment.costBasis ?? investment.value) || 0;
         const oldValue = Number(investment.value) || 0;
-
         investment.costBasis = roundMoney(oldCost + amount);
         investment.value = roundMoney(oldValue + addedValue);
-
-        if (quantity > 0) {
-          investment.quantity = hasOldQuantity ? oldQuantity + quantity : quantity;
-        }
-
+        if (quantity > 0) investment.quantity = hasOldQuantity ? oldQuantity + quantity : quantity;
         const totalQuantity = Number(investment.quantity);
         investment.averagePrice = totalQuantity > 0 ? investment.costBasis / totalQuantity : null;
         investment.currentPrice = totalQuantity > 0 ? investment.value / totalQuantity : (Number(item.unitPrice) || null);
       } else {
-        investment = {
-          name:assetName,
-          category:item.category || "Altro",
-          quantity:quantity > 0 ? quantity : null,
-          costBasis:amount,
-          averagePrice:quantity > 0 ? amount / quantity : null,
-          currentPrice:quantity > 0 ? addedValue / quantity : (Number(item.unitPrice) || null),
-          value:roundMoney(addedValue)
-        };
+        investment = {name:assetName,category:item.category || "Altro",quantity:quantity > 0 ? quantity : null,
+          costBasis:amount,averagePrice:quantity > 0 ? amount / quantity : null,
+          currentPrice:quantity > 0 ? addedValue / quantity : (Number(item.unitPrice) || null),value:roundMoney(addedValue)};
         account.investments.push(investment);
       }
     }
   } else if (type === "sale") {
     const assetName = item.assetName || item.description || "";
     const quantity = Number(item.quantity);
-    const investment = findInvestment(account, assetName);
-
+    const investment = findInvestment(account,assetName);
     account.liquidity = roundMoney(Number(account.liquidity) + amount);
-
     if (investment && quantity > 0 && Number(investment.quantity) > 0) {
       const oldQuantity = Number(investment.quantity);
       const oldCost = Number(investment.costBasis ?? investment.value) || 0;
-      const soldQuantity = Math.min(quantity, oldQuantity);
+      const soldQuantity = Math.min(quantity,oldQuantity);
       const costSold = oldCost * soldQuantity / oldQuantity;
-      const remaining = Math.max(0, oldQuantity - soldQuantity);
-
+      const remaining = Math.max(0,oldQuantity - soldQuantity);
       item.costBasisSold = roundMoney(costSold);
-
-      if (remaining <= 1e-10) {
-        account.investments = account.investments.filter(i => i !== investment);
-      } else {
+      if (remaining <= 1e-10) account.investments = account.investments.filter(i => i !== investment);
+      else {
         investment.quantity = remaining;
         investment.costBasis = roundMoney(oldCost - costSold);
         investment.averagePrice = investment.costBasis / remaining;
-
         if (Number(investment.currentPrice) > 0) investment.value = roundMoney(remaining * Number(investment.currentPrice));
         else investment.value = roundMoney(Number(investment.value) * remaining / oldQuantity);
       }
     }
   }
-
   updateAccountBalance(account);
 }
 
 function saveMovementEdit() {
   if (!editingMovement) return alert("Nessun movimento selezionato per la modifica.");
-
-  const {collection, id} = editingMovement;
-  const item = getMovement(collection, id);
-
+  const {collection,id} = editingMovement;
+  const item = getMovement(collection,id);
   if (!item) return alert("Il movimento non è più disponibile. Riapri la cronologia e riprova.");
 
   const newType = document.getElementById("editMovementType").value;
@@ -1797,18 +1664,13 @@ function saveMovementEdit() {
   if (!Number.isFinite(commission) || commission < 0) return alert("La commissione inserita non è valida.");
 
   const original = JSON.parse(JSON.stringify(item));
-  reverseMovementEffect(collection, original);
+  reverseMovementEffect(collection,original);
 
   if (newType === "transfer") {
     const from = accountById(document.getElementById("editFromAccount").value);
     const to = accountById(document.getElementById("editToAccount").value);
-
     item.internal = false;
-    delete item.assetName;
-    delete item.preexisting;
-    delete item.receivedValue;
-    delete item.unitPrice;
-
+    delete item.assetName; delete item.preexisting; delete item.receivedValue; delete item.unitPrice;
     item.fromId = from ? from.id : null;
     item.toId = to ? to.id : null;
     item.fromName = from ? from.name : "";
@@ -1817,11 +1679,9 @@ function saveMovementEdit() {
     item.toColor = to ? to.color : "";
     item.amount = amount;
     item.date = date || item.date || Date.now();
-
-    if (amount !== null) applyMovementEffect("transfers", item);
+    if (amount !== null) applyMovementEffect("transfers",item);
   } else {
     const account = accountById(document.getElementById("editMovementAccount").value);
-
     item.accountId = account ? account.id : null;
     item.accountName = account ? account.name : "";
     item.accountColor = account ? account.color : "";
@@ -1838,32 +1698,25 @@ function saveMovementEdit() {
       item.category = item.category || "Altro";
       item.receivedValue = Number(item.receivedValue ?? amount);
       item.preexisting = Boolean(item.preexisting);
-
       if (collection === "incomes") {
         incomes = incomes.filter(entry => String(entry.id) !== String(id));
         item.id = makeId();
         transfers.push(item);
         editingMovement = {collection:"transfers",id:String(item.id)};
       }
-
-      if (amount !== null) applyMovementEffect("transfers", item);
+      if (amount !== null) applyMovementEffect("transfers",item);
     } else {
       item.internal = false;
-      delete item.preexisting;
-      delete item.receivedValue;
-      delete item.unitPrice;
-
+      delete item.preexisting; delete item.receivedValue; delete item.unitPrice;
       if (collection === "transfers") {
         transfers = transfers.filter(entry => String(entry.id) !== String(id));
         item.id = makeId();
         incomes.push(item);
         editingMovement = {collection:"incomes",id:String(item.id)};
       }
-
       item.type = newType;
       item.description = description;
-      item.assetName = newType === "sale" ? description.replace(/^Vendita\s*/i, "") : item.assetName;
-
+      item.assetName = newType === "sale" ? description.replace(/^Vendita\s*/i,"") : item.assetName;
       if (newType === "sale") {
         item.quantity = quantity;
         item.commission = commission;
@@ -1872,18 +1725,19 @@ function saveMovementEdit() {
         delete item.quantity;
         delete item.commission;
       }
-
-      if (amount !== null) applyMovementEffect("incomes", item);
+      if (amount !== null) applyMovementEffect("incomes",item);
     }
   }
-
   persist();
   closeMovementEditor();
-
   if (selectedAccountId !== null) openAccountDetail(selectedAccountId);
 }
 
+loadLocalData();
+normalizeMovementIds();
+normalizeAccounts();
 render();
+startServerSync();
 </script>
 </body>
 </html>
