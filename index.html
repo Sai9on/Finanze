@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -82,10 +81,11 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
 .profitNegative{color:#c03945}
 
 /* Salvadanaio */
+#piggybankSection{width:calc(100% + 20px);margin-left:-10px;padding:14px 12px}
 .piggyTotal{font-size:27px;font-weight:750;margin:8px 0 17px}
 .piggyRow{display:flex;align-items:center;gap:7px;padding:10px 0;border-bottom:1px solid #e3e5e9}
-.piggyImage{width:58px;height:42px;object-fit:contain;flex-shrink:0}
-.piggyImageBox{width:58px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.piggyImage{width:76px;height:54px;object-fit:contain;flex-shrink:0}
+.piggyImageBox{width:76px;height:54px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .piggyImageBox img{max-width:100%;max-height:100%;object-fit:contain}
 .piggyButton{width:32px;height:34px;border:0;border-radius:9px;background:#e9edf3;font-size:20px;font-weight:700;flex-shrink:0}
 .piggyQuantity{width:52px;padding:7px 3px;text-align:center;border:1px solid #dddfe4;border-radius:8px;font-size:15px;font-weight:650}
@@ -119,7 +119,6 @@ input,select{width:100%;border:1px solid #dddfe4;border-radius:11px;padding:13px
     </div>
 
     <div class="composition" id="piggybankSection" style="display:none">
-      <div class="compositionTitle"><span class="sectionMarker"></span>SALVADANAIO</div>
       <div class="label">TOTALE CONTANTI</div>
       <div class="piggyTotal" id="piggyTotal">€ 0,00</div>
       <div id="piggyRows"></div>
